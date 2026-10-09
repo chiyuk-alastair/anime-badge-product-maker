@@ -23,4 +23,4 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Contribution, conduct, security, and support policies.
 
 [Unreleased]: https://github.com/chiyuk-alastair/anime-badge-product-maker/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/chiyuk-alastair/anime-badge-product-maker/releases/tag/v1.0.0
+[1.0.0]: https://github.com/chiyuk-alastair/anime-badge-product-maker/tree/v1.0.0
