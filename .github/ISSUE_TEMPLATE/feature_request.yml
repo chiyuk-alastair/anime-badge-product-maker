@@ -1,0 +1,31 @@
+name: Feature request
+description: Propose a focused improvement supported by a real workflow need.
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What repeatable problem should the project solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed outcome
+      description: Describe observable behavior, not only implementation details.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Compatibility and scope
+      description: Explain any effect on the one-image workflow or three-output contract.
+  - type: checkboxes
+    id: public
+    attributes:
+      label: Public-safe example
+      options:
+        - label: Any attached example is synthetic, licensed for sharing, or sufficiently redacted.
+          required: true
