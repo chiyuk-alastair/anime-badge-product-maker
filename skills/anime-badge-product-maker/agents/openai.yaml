@@ -1,0 +1,4 @@
+interface:
+  display_name: "Anime Badge Product Maker"
+  short_description: "Build badge art, a real mockup, and a matching sales image"
+  default_prompt: "Use $anime-badge-product-maker to turn this figure image into badge art, a physical badge mockup, and a matching sales image."
