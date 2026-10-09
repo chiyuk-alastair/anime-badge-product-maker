@@ -20,6 +20,7 @@ Use the bug template for reproducible failures and the feature template for focu
 5. Update English and Chinese documentation when public behavior changes.
 6. Add an entry under `Unreleased` in [CHANGELOG.md](CHANGELOG.md).
 7. Run `python scripts/validate_repo.py` before submitting.
+8. When changing either installer, run it twice against a temporary Codex home and verify the installed skill with `python scripts/validate_repo.py --installed-skill <path>`.
 
 ## Instruction quality
 

@@ -10,6 +10,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Add tested refinements only when real workflows demonstrate a repeatable need.
 
+## [1.0.1] - 2026-10-09
+
+### Fixed
+
+- Replaced non-idempotent copy commands that could create a nested skill directory during reinstall or update.
+
+### Changed
+
+- Added repeatable PowerShell and Bash installers with `CODEX_HOME` support.
+- Added Windows and Linux repeat-install smoke tests and exact installed-copy verification.
+- Strengthened repository validation for UI metadata, pinned workflow dependencies, and unapproved image files.
+- Clarified that the final sales composition should place the approved physical badge as a locked layer instead of regenerating it.
+- Updated GitHub Actions to current, commit-pinned official action releases.
+
 ## [1.0.0] - 2026-10-09
 
 ### Added
@@ -22,5 +36,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Dependency-free repository validator and GitHub Actions workflow.
 - Contribution, conduct, security, and support policies.
 
-[Unreleased]: https://github.com/chiyuk-alastair/anime-badge-product-maker/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/chiyuk-alastair/anime-badge-product-maker/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/chiyuk-alastair/anime-badge-product-maker/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/chiyuk-alastair/anime-badge-product-maker/tree/v1.0.0

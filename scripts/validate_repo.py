@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import argparse
 import re
 import struct
 import sys
@@ -18,6 +19,7 @@ REQUIRED_FILES = (
     ROOT / ".gitattributes",
     ROOT / ".gitignore",
     ROOT / ".github" / "CODEOWNERS",
+    ROOT / ".github" / "dependabot.yml",
     ROOT / ".github" / "PULL_REQUEST_TEMPLATE.md",
     ROOT / ".github" / "ISSUE_TEMPLATE" / "bug_report.yml",
     ROOT / ".github" / "ISSUE_TEMPLATE" / "feature_request.yml",
@@ -31,6 +33,8 @@ REQUIRED_FILES = (
     ROOT / "CODE_OF_CONDUCT.md",
     ROOT / "SECURITY.md",
     ROOT / "SUPPORT.md",
+    ROOT / "scripts" / "install-skill.ps1",
+    ROOT / "scripts" / "install-skill.sh",
     SKILL_MD,
     SKILL_DIR / "README.md",
     SKILL_DIR / "agents" / "openai.yaml",
@@ -50,6 +54,12 @@ GENERATED_OUTPUTS = set(REQUIRED_OUTPUTS) | {
     "cleaned-background.png",
     "badge-cutout.png",
 }
+
+ALLOWED_IMAGE_FILES = {
+    (SKILL_DIR / "assets" / "default-blank-badge.png").resolve(),
+}
+
+IMAGE_SUFFIXES = {".avif", ".gif", ".jpeg", ".jpg", ".png", ".webp"}
 
 
 def fail(message: str) -> None:
@@ -114,7 +124,82 @@ def validate_links() -> None:
                 fail(f"broken link in {markdown.relative_to(ROOT)}: {target}")
 
 
+def quoted_yaml_value(text: str, key: str) -> str:
+    match = re.search(rf'^\s*{re.escape(key)}:\s*"([^"]*)"\s*$', text, re.M)
+    if not match:
+        fail(f"agents/openai.yaml must contain a quoted {key} value")
+    return match.group(1)
+
+
+def validate_workflow_pins() -> None:
+    workflow = read_text(ROOT / ".github" / "workflows" / "validate-skill.yml")
+    external_uses = re.findall(r"^\s*uses:\s*([^\s#]+)", workflow, re.M)
+    if not external_uses:
+        fail("validation workflow contains no external actions")
+    for action in external_uses:
+        if action.startswith("./"):
+            continue
+        if not re.fullmatch(r"[^@]+@[0-9a-f]{40}", action):
+            fail(f"workflow action must be pinned to a full commit SHA: {action}")
+
+
+def validate_repository_images() -> None:
+    unexpected = [
+        path.relative_to(ROOT)
+        for path in ROOT.rglob("*")
+        if path.is_file()
+        and path.suffix.lower() in IMAGE_SUFFIXES
+        and path.resolve() not in ALLOWED_IMAGE_FILES
+        and ".git" not in path.parts
+        and ".validation-deps" not in path.parts
+    ]
+    if unexpected:
+        fail("unapproved image files must not be committed: " + ", ".join(map(str, unexpected)))
+
+
+def validate_installed_skill(installed: Path) -> None:
+    if not installed.is_dir():
+        fail(f"installed skill directory does not exist: {installed}")
+
+    source_files = {
+        path.relative_to(SKILL_DIR): path
+        for path in SKILL_DIR.rglob("*")
+        if path.is_file()
+    }
+    installed_files = {
+        path.relative_to(installed): path
+        for path in installed.rglob("*")
+        if path.is_file()
+    }
+
+    missing = sorted(set(source_files) - set(installed_files))
+    extra = sorted(set(installed_files) - set(source_files))
+    if missing or extra:
+        details = []
+        if missing:
+            details.append("missing: " + ", ".join(map(str, missing)))
+        if extra:
+            details.append("extra: " + ", ".join(map(str, extra)))
+        fail("installed skill tree differs from source (" + "; ".join(details) + ")")
+
+    changed = [
+        relative
+        for relative, source in source_files.items()
+        if source.read_bytes() != installed_files[relative].read_bytes()
+    ]
+    if changed:
+        fail("installed skill files differ from source: " + ", ".join(map(str, changed)))
+
+
 def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--installed-skill",
+        type=Path,
+        help="also require this installed skill directory to exactly match the packaged source",
+    )
+    args = parser.parse_args()
+
     missing = [str(path.relative_to(ROOT)) for path in REQUIRED_FILES if not path.is_file()]
     if missing:
         fail("missing required files: " + ", ".join(missing))
@@ -144,14 +229,20 @@ def main() -> None:
         fail("SKILL.md must forbid prompt-only completion")
 
     ui_text = read_text(SKILL_DIR / "agents" / "openai.yaml")
-    for required in ("display_name:", "short_description:", "default_prompt:"):
-        if required not in ui_text:
-            fail(f"agents/openai.yaml is missing {required}")
-    if "$anime-badge-product-maker" not in ui_text:
+    display_name = quoted_yaml_value(ui_text, "display_name")
+    short_description = quoted_yaml_value(ui_text, "short_description")
+    default_prompt = quoted_yaml_value(ui_text, "default_prompt")
+    if not display_name:
+        fail("display_name must not be empty")
+    if not 25 <= len(short_description) <= 64:
+        fail("short_description must contain 25-64 characters")
+    if "$anime-badge-product-maker" not in default_prompt:
         fail("default_prompt must mention $anime-badge-product-maker")
 
     validate_png(SKILL_DIR / "assets" / "default-blank-badge.png")
     validate_links()
+    validate_workflow_pins()
+    validate_repository_images()
 
     accidental = [
         path.relative_to(ROOT)
@@ -160,6 +251,15 @@ def main() -> None:
     ]
     if accidental:
         fail("generated customer outputs must not be committed: " + ", ".join(map(str, accidental)))
+
+    for readme in (ROOT / "README.md", ROOT / "README.zh-CN.md"):
+        readme_text = read_text(readme)
+        for installer in ("install-skill.ps1", "install-skill.sh"):
+            if installer not in readme_text:
+                fail(f"{readme.name} must document {installer}")
+
+    if args.installed_skill:
+        validate_installed_skill(args.installed_skill.resolve())
 
     print("Repository validation passed.")
 

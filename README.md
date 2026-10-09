@@ -39,22 +39,21 @@ The cleaned background and transparent badge cutout are intermediate assets. The
 
 Clone the repository and copy the complete skill directory. Do not copy `SKILL.md` by itself because the workflow also uses its references, UI metadata, and physical badge asset.
 
-PowerShell:
+PowerShell (safe to run again when updating):
 
 ```powershell
 git clone https://github.com/chiyuk-alastair/anime-badge-product-maker.git
-Copy-Item -Recurse -Force `
-  .\anime-badge-product-maker\skills\anime-badge-product-maker `
-  "$env:USERPROFILE\.codex\skills\anime-badge-product-maker"
+.\anime-badge-product-maker\scripts\install-skill.ps1
 ```
 
-Bash:
+Bash (safe to run again when updating):
 
 ```bash
 git clone https://github.com/chiyuk-alastair/anime-badge-product-maker.git
-cp -R anime-badge-product-maker/skills/anime-badge-product-maker \
-  "${CODEX_HOME:-$HOME/.codex}/skills/anime-badge-product-maker"
+bash anime-badge-product-maker/scripts/install-skill.sh
 ```
+
+The installers honor `CODEX_HOME` and otherwise use the standard `~/.codex` location. To update an existing checkout, run `git pull --ff-only` inside it and run the installer again. Both installers copy the skill contents into the existing target instead of nesting a second skill directory.
 
 Restart or refresh Codex after installation if the skill is not discovered immediately.
 
@@ -100,7 +99,10 @@ See the [quality checklist](skills/anime-badge-product-maker/references/quality-
 ```text
 anime-badge-product-maker/
 ├── .github/                         Project automation and contribution templates
-├── scripts/validate_repo.py         Dependency-free repository validator
+├── scripts/
+│   ├── install-skill.ps1            Idempotent PowerShell installer
+│   ├── install-skill.sh             Idempotent Bash installer
+│   └── validate_repo.py             Dependency-free repository validator
 ├── skills/anime-badge-product-maker/
 │   ├── SKILL.md                     Skill entry point and workflow
 │   ├── agents/openai.yaml           Codex UI metadata
@@ -122,7 +124,13 @@ Run the repository validator with Python 3.9 or newer:
 python scripts/validate_repo.py
 ```
 
-It checks required files, frontmatter, skill naming, UI metadata, resource links, the PNG asset, required output names, exact sales copy, and accidental inclusion of generated customer images.
+It checks required files, frontmatter, skill naming, UI metadata, resource links, the PNG asset, required output names, exact sales copy, workflow dependency pinning, and accidental inclusion of unapproved images.
+
+To compare an installed copy byte-for-byte with the packaged skill, run:
+
+```bash
+python scripts/validate_repo.py --installed-skill /path/to/.codex/skills/anime-badge-product-maker
+```
 
 When the official Codex `skill-creator` validator is available, also run:
 
@@ -130,7 +138,7 @@ When the official Codex `skill-creator` validator is available, also run:
 quick_validate.py skills/anime-badge-product-maker
 ```
 
-GitHub Actions runs the dependency-free validator on every push and pull request.
+GitHub Actions runs the dependency-free validator and repeat-install smoke tests on both Windows and Linux for every push and pull request.
 
 ## Privacy and repository scope
 

@@ -39,22 +39,21 @@
 
 克隆仓库后，请完整复制 Skill 文件夹。不要只复制 `SKILL.md`，因为流程还会使用参考规则、界面元数据和默认实体徽章素材。
 
-PowerShell：
+PowerShell（更新时可以安全地重复执行）：
 
 ```powershell
 git clone https://github.com/chiyuk-alastair/anime-badge-product-maker.git
-Copy-Item -Recurse -Force `
-  .\anime-badge-product-maker\skills\anime-badge-product-maker `
-  "$env:USERPROFILE\.codex\skills\anime-badge-product-maker"
+.\anime-badge-product-maker\scripts\install-skill.ps1
 ```
 
-Bash：
+Bash（更新时可以安全地重复执行）：
 
 ```bash
 git clone https://github.com/chiyuk-alastair/anime-badge-product-maker.git
-cp -R anime-badge-product-maker/skills/anime-badge-product-maker \
-  "${CODEX_HOME:-$HOME/.codex}/skills/anime-badge-product-maker"
+bash anime-badge-product-maker/scripts/install-skill.sh
 ```
+
+安装脚本会优先使用 `CODEX_HOME`，未设置时使用标准的 `~/.codex` 目录。更新已有仓库时，请先在仓库内运行 `git pull --ff-only`，再重新运行安装脚本。两个脚本都会把 Skill 内容合并到现有目标目录，不会再套出第二层同名目录。
 
 如 Codex 没有马上识别新 Skill，请刷新或重启 Codex。
 
@@ -94,7 +93,10 @@ cp -R anime-badge-product-maker/skills/anime-badge-product-maker \
 ```text
 anime-badge-product-maker/
 ├── .github/                         自动校验与贡献模板
-├── scripts/validate_repo.py         无第三方依赖的仓库校验器
+├── scripts/
+│   ├── install-skill.ps1            可重复执行的 PowerShell 安装器
+│   ├── install-skill.sh             可重复执行的 Bash 安装器
+│   └── validate_repo.py             无第三方依赖的仓库校验器
 ├── skills/anime-badge-product-maker/
 │   ├── SKILL.md                     Skill 入口与完整工作流
 │   ├── agents/openai.yaml           Codex 界面元数据
@@ -116,9 +118,15 @@ anime-badge-product-maker/
 python scripts/validate_repo.py
 ```
 
-校验器会检查必需文件、YAML frontmatter、Skill 命名、界面元数据、资源链接、PNG 素材、三个固定产物名、准确文案，以及是否误提交了用户生成图。
+校验器会检查必需文件、YAML frontmatter、Skill 命名、界面元数据、资源链接、PNG 素材、三个固定产物名、准确文案、工作流依赖固定方式，以及是否误提交了未批准图片。
 
-GitHub Actions 会在每次推送和 Pull Request 时自动执行同一套检查。
+如需逐字节比对已安装副本和仓库中的 Skill，可运行：
+
+```bash
+python scripts/validate_repo.py --installed-skill /path/to/.codex/skills/anime-badge-product-maker
+```
+
+GitHub Actions 会在每次推送和 Pull Request 时同时在 Windows 与 Linux 上执行仓库校验和重复安装测试。
 
 ## 隐私与仓库边界
 

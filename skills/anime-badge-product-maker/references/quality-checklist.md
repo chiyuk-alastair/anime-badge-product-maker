@@ -60,6 +60,7 @@ Review every generated or edited image. A failed hard gate requires a targeted c
 
 - [ ] Exactly one real physical badge is present.
 - [ ] Badge art, metal rim, highlight, curvature, and proportions match `02-badge-mockup.png`; it was not redrawn as a flat illustration.
+- [ ] The badge is the Stage D cutout placed as a locked layer whenever literal compositing is available; generative editing did not silently replace it.
 - [ ] Badge has believable scale, perspective, contact shadow, and environmental reflection.
 - [ ] Figure and badge clearly depict the same subject and visual theme.
 

@@ -1,6 +1,6 @@
 ---
 name: anime-badge-product-maker
-description: "Turn anime collectible-figure photos, GK photos, or effect renders into a complete badge-product set: circular badge artwork, a photoreal physical button-badge mockup, and a matching sales image that combines the cleaned source figure with the real badge. Use for requests such as ‘实体手办做成徽章并出商品图’, ‘实体手办+实体徽章’, ‘马口铁胸针谷子’, or ‘完整徽章商品流程’. Do not use for badge artwork-only requests that do not need the physical mockup or sales image."
+description: "Turn anime collectible-figure photos, GK photos, screenshots, or effect renders into a complete badge-product set: circular badge artwork, a photoreal physical button-badge mockup, and a matching sales image that combines the cleaned source figure with the real badge. Use for requests such as ‘实体手办做成徽章并出商品图’, ‘实体手办+实体徽章’, ‘马口铁胸针谷子’, or ‘完整徽章商品流程’. Do not use for badge artwork-only requests that do not need the physical mockup or sales image."
 license: MIT
 ---
 
@@ -113,6 +113,7 @@ Create a transparent working cutout from `02-badge-mockup.png`.
 
 Combine the approved Stage C background and exact Stage D physical badge.
 
+- Prefer literal layer compositing when an image editor or compositor is available. Treat the badge cutout as locked pixels: scale, position, and apply perspective only when needed; create its contact shadow on a separate layer. Do not send the badge through a generative redraw merely to place it.
 - Use a 1:1 canvas. Keep the real figure left or center-left.
 - Place exactly one badge in the lower-right foreground, usually about 35–42% of canvas width. Keep its complete rim visible and large enough to inspect.
 - Do not cover the figure's face, key gesture, weapon or power effect, signature accessory, companion face, or meaningful base inscription.
@@ -120,7 +121,7 @@ Combine the approved Stage C background and exact Stage D physical badge.
 - Add the exact Chinese copy `马口铁胸针谷子`. Spell it as seven characters: `马 口 铁 胸 针 谷 子`. Use readable display typography coordinated with the image palette.
 - The only other default text allowed is a character name or physical base inscription preserved from the source. Do not add price, coupon, shipping, shop, franchise, studio, seller, English, or Japanese copy unless requested.
 - Make the physical badge the primary sale item, the matching figure the supporting context, and the product descriptor secondary.
-- Compare the inserted badge against `02-badge-mockup.png`. If its internal art, rim, reflection, or proportions were redrawn, the composition fails.
+- Compare the inserted badge against `02-badge-mockup.png`. If its internal art, rim, reflection, or proportions were redrawn, or if a second badge was generated from prose instead of using the cutout, the composition fails.
 
 ## Review and correction limit
 

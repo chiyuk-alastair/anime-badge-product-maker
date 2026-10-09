@@ -9,6 +9,7 @@ Explain the repeatable problem this solves and the evidence for the change.
 ## Validation
 
 - [ ] I ran `python scripts/validate_repo.py`.
+- [ ] If I changed installation behavior, I tested a repeated install without nested or stale files.
 - [ ] I updated both English and Chinese documentation if public behavior changed.
 - [ ] I added an `Unreleased` changelog entry when appropriate.
 - [ ] I did not add customer uploads, generated customer images, seller/platform screenshots, credentials, or private data.
